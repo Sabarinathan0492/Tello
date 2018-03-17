@@ -1,4 +1,8 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
 
 namespace Trello
 {
@@ -6,7 +10,7 @@ namespace Trello
     {
         static void Main(string[] args)
         {
-            Console.WriteLine("Hello World!");
+            OAuthHelper.Login();
         }
     }
 }
