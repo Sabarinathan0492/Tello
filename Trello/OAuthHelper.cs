@@ -16,8 +16,9 @@ namespace Trello
         private static string _appKey = ConfigurationManager.AppSettings["AppKey"];
         private static string _secret = ConfigurationManager.AppSettings["Secret"];
         private static string requestURL = ConfigurationManager.AppSettings["requestURL"];
+        private static string accessURL = ConfigurationManager.AppSettings["accessURL"];
 
-        public static string Login()
+        public static Dictionary<string, string> Login()
         {
             OAuthRequest request = new OAuthRequest();
             request.ConsumerKey = _appKey;
@@ -30,7 +31,39 @@ namespace Trello
             using (HttpClient client = new HttpClient())
             {
                 var response = client.GetAsync(requestURL + "?" + request.GetAuthorizationQuery()).Result;
-                return response.Content.ReadAsStringAsync().Result;
+                Dictionary<string, string> returnValue = new Dictionary<string, string>();
+                if (response.IsSuccessStatusCode)
+                {
+                    var queryParams = response.Content.ReadAsStringAsync().Result.Split('&');
+                    foreach (var param in queryParams)
+                        returnValue.Add(param.Split('=')[0], param.Split('=')[1]);
+                }
+                return returnValue;
+            }
+        }
+
+        public static string GetAccessToken(string token, string tokenSecret, string verificationCode)
+        {
+            OAuthRequest request = new OAuthRequest();
+            request.ConsumerKey = _appKey;
+            request.ConsumerSecret = _secret;
+            request.Token = token;
+            request.TokenSecret = tokenSecret;
+            request.Verifier = verificationCode;
+            request.Method = "GET";
+            request.RequestUrl = accessURL;
+            request.Version = "1.0";
+            request.Type = OAuthRequestType.RequestToken;
+
+            using (HttpClient client = new HttpClient())
+            {
+                var response = client.GetAsync(accessURL + "?" + request.GetAuthorizationQuery()).Result;
+                string returnValue = null;
+                if (response.IsSuccessStatusCode)
+                {
+                    returnValue = response.Content.ReadAsStringAsync().Result;
+                }
+                return returnValue;
             }
         }
 

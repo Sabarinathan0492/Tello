@@ -10,7 +10,10 @@ namespace Trello
     {
         static void Main(string[] args)
         {
-            OAuthHelper.Login();
+            var token = OAuthHelper.Login();
+            var verificationCode = SeleniumHelper.AuthorizeTrello(token.FirstOrDefault(x => x.Key == "oauth_token").Value);
+            OAuthHelper.GetAccessToken(token.FirstOrDefault(x => x.Key == "oauth_token").Value, token.FirstOrDefault(x => x.Key == "oauth_token_secret").Value, verificationCode);
+            Console.ReadLine();
         }
     }
 }
