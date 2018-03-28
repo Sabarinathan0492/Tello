@@ -11,13 +11,14 @@ namespace Trello
     public static class SeleniumHelper
     {
         private static string _authorizeURL = ConfigurationManager.AppSettings["authorizeURL"];
+        private static string _appKey = ConfigurationManager.AppSettings["AppKey"];
         private static string _userName = ConfigurationManager.AppSettings["userName"];
         private static string _password = ConfigurationManager.AppSettings["password"];
 
-        public static string AuthorizeTrello(string token)
+        public static string AuthorizeTrello()
         {
             IWebDriver webdriver = new ChromeDriver();
-            webdriver.Url = _authorizeURL + "?oauth_token=" + token + "&name=TrelloApp";
+            webdriver.Url = $"{_authorizeURL}?expiration=1day&name=MyPersonalToken&scope=read&response_type=token&key={_appKey}";
             webdriver.Navigate();
             webdriver.FindElement(By.LinkText("Log in")).Click();
             webdriver.Manage().Timeouts().ImplicitWait = TimeSpan.FromSeconds(10);
@@ -27,9 +28,9 @@ namespace Trello
             webdriver.Manage().Timeouts().ImplicitWait = TimeSpan.FromSeconds(10);
             webdriver.FindElement(By.ClassName("primary")).Click();
             webdriver.Manage().Timeouts().ImplicitWait = TimeSpan.FromSeconds(10);
-            var verificationCode =  webdriver.FindElement(By.TagName("pre")).Text;
+            var token =  webdriver.FindElement(By.TagName("pre")).Text.Trim();
             webdriver.Quit();
-            return verificationCode;
+            return token;
         }
     }
 }

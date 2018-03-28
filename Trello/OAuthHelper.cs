@@ -53,7 +53,7 @@ namespace Trello
             request.Method = "GET";
             request.RequestUrl = accessURL;
             request.Version = "1.0";
-            request.Type = OAuthRequestType.RequestToken;
+            request.Type = OAuthRequestType.AccessToken;
 
             using (HttpClient client = new HttpClient())
             {
